@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 class ViewController: UIViewController {
 
@@ -17,27 +18,44 @@ class ViewController: UIViewController {
     
     @IBAction func appendDigit(sender: UIButton) {
         
-        let digit = sender.currentTitle!
-        if userIsInTheMiddleOfTypingANumber {
-            display.text = display.text! + digit
-        }else{
-            display.text = digit
-            userIsInTheMiddleOfTypingANumber = true
+        var digit = sender.currentTitle!
+        
+        switch digit{
+        case "π": digit = "\(M_PI)"
+        default:break
+        }
+        
+        if !(display.text!.rangeOfString(".") != nil && digit == ".") {
+            if userIsInTheMiddleOfTypingANumber {
+                    display.text = display.text! + digit
+                    historyStack.append(digit)
+                    println("historyStack = \(historyStack)")
+            }else{
+                display.text = digit
+                historyStack.append(digit)
+                println("historyStack = \(historyStack)")
+                userIsInTheMiddleOfTypingANumber = true
+            }
         }
     }
     
     @IBAction func operate(sender: UIButton) {
         let operation = sender.currentTitle!
+        historyStack.append(operation)
+        println("historyStack = \(historyStack)")
         if userIsInTheMiddleOfTypingANumber{
             enter()
         }
+        //switches in Swift must be exhaustive so that is why we have the default case since we can't switch on every possible String. Switches in Swift also don't fallthrough by default.
         switch operation{
             //this is a closure
         case "×":performOperation{ $0 * $1 }
         case "÷":performOperation{ $1 / $0 }
         case "+":performOperation{ $0 + $1 }
         case "−":performOperation{ $1 - $0 }
-        case "√":performOperation{ sqrt($0)}
+        case "√":performOperation{ sqrt($0) }
+        case "sin":performOperation{ sin($0) }
+        case "cos":performOperation{ cos($0) }
         default: break
         }
         
@@ -60,21 +78,33 @@ class ViewController: UIViewController {
         }
     }
     
-    
+    //this is an array, we don't need to say Array<Double> on the left side because Swift supports type inference
     var operandStack = Array<Double>()
+    
+    var historyStack = Array<String>()
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
         operandStack.append(displayValue)
-        println("operandStack = \(operandStack)")
+        //println("operandStack = \(operandStack)")
     }
     
+    @IBAction func clear() {
+        display.text = "0"
+        operandStack.removeAll(keepCapacity: false)
+        historyStack.removeAll(keepCapacity: false)
+        userIsInTheMiddleOfTypingANumber  = false
+    }
+    
+    //this is a computed property. The getter gets the value from the display text and the setter sets it. Inside the get we are computing the display.text to convert it into a double.
     var displayValue:Double
         {
         get{
+            //NSNumberFormatter().numberFromString is an objective-C function.
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
         }
         set{
+            //newValue gets the value that will go into displayValue, we then use String Interpolation
             display.text =  "\(newValue)"
             userIsInTheMiddleOfTypingANumber = false
         }
