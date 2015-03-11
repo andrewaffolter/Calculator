@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     //this is an implicitly unwrapped optional
     @IBOutlet weak var display: UILabel!
  
+    @IBOutlet weak var history: UILabel!
+    
     var userIsInTheMiddleOfTypingANumber  = false
     
     @IBAction func appendDigit(sender: UIButton) {
@@ -28,11 +30,11 @@ class ViewController: UIViewController {
         if !(display.text!.rangeOfString(".") != nil && digit == ".") {
             if userIsInTheMiddleOfTypingANumber {
                     display.text = display.text! + digit
-                    historyStack.append(digit)
+                    updateHistory(digit)
                     println("historyStack = \(historyStack)")
             }else{
                 display.text = digit
-                historyStack.append(digit)
+                updateHistory(digit)
                 println("historyStack = \(historyStack)")
                 userIsInTheMiddleOfTypingANumber = true
             }
@@ -41,7 +43,7 @@ class ViewController: UIViewController {
     
     @IBAction func operate(sender: UIButton) {
         let operation = sender.currentTitle!
-        historyStack.append(operation)
+        updateHistory(operation)
         println("historyStack = \(historyStack)")
         if userIsInTheMiddleOfTypingANumber{
             enter()
@@ -91,11 +93,44 @@ class ViewController: UIViewController {
     
     @IBAction func clear() {
         display.text = "0"
+        history.text = ""
         operandStack.removeAll(keepCapacity: false)
         historyStack.removeAll(keepCapacity: false)
         userIsInTheMiddleOfTypingANumber  = false
     }
     
+    @IBAction func backspace() {
+        if countElements(display.text!) > 0{
+            display.text = dropLast(display.text!)
+        }else
+        {
+            display.text = "0"
+        }
+    }
+    
+    func updateHistory(historyElement:String)
+    {
+        history.hidden = false
+        historyStack.append(historyElement)
+        if let historyStackElement = historyStack.last {
+             history.text! += historyStackElement
+            
+        }
+       
+    }
+    
+    @IBAction func sign() {
+        if displayValue.isSignMinus
+        {
+            displayValue = abs(displayValue)
+        }else if displayValue > 0
+        {
+            displayValue = -displayValue
+        }
+        if !userIsInTheMiddleOfTypingANumber {
+             enter()
+        }
+    }
     //this is a computed property. The getter gets the value from the display text and the setter sets it. Inside the get we are computing the display.text to convert it into a double.
     var displayValue:Double
         {
