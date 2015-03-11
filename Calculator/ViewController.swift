@@ -15,8 +15,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
  
     @IBOutlet weak var history: UILabel!
+
     
     var userIsInTheMiddleOfTypingANumber  = false
+    
+    //this is an array, we don't need to say Array<Double> on the left side because Swift supports type inference
+    var operandStack = Array<Double>()
+    
+    var historyStack = Array<String>()
     
     @IBAction func appendDigit(sender: UIButton) {
         
@@ -71,7 +77,6 @@ class ViewController: UIViewController {
         }
     }
     
-    
     func performOperation(operation: Double -> Double)
     {
         if operandStack.count >= 1 {
@@ -80,15 +85,10 @@ class ViewController: UIViewController {
         }
     }
     
-    //this is an array, we don't need to say Array<Double> on the left side because Swift supports type inference
-    var operandStack = Array<Double>()
-    
-    var historyStack = Array<String>()
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
-        //println("operandStack = \(operandStack)")
+        operandStack.append(displayValue!)
     }
     
     @IBAction func clear() {
@@ -102,9 +102,10 @@ class ViewController: UIViewController {
     @IBAction func backspace() {
         if countElements(display.text!) > 0{
             display.text = dropLast(display.text!)
-        }else
+        }else if countElements(display.text!) == 0
         {
             display.text = "0"
+            userIsInTheMiddleOfTypingANumber = false
         }
     }
     
@@ -112,38 +113,40 @@ class ViewController: UIViewController {
     {
         history.hidden = false
         historyStack.append(historyElement)
-        if let historyStackElement = historyStack.last {
-             history.text! += historyStackElement
-            
+        if let last = historyStack.last {
+             history.text! += last
         }
-       
     }
     
     @IBAction func sign() {
-        if displayValue.isSignMinus
+        if displayValue!.isSignMinus
         {
-            displayValue = abs(displayValue)
-        }else if displayValue > 0
+            displayValue! = abs(displayValue!)
+        }else if displayValue! > 0
         {
-            displayValue = -displayValue
+            displayValue! = -displayValue!
         }
         if !userIsInTheMiddleOfTypingANumber {
              enter()
         }
     }
+    
     //this is a computed property. The getter gets the value from the display text and the setter sets it. Inside the get we are computing the display.text to convert it into a double.
-    var displayValue:Double
+    var displayValue:Double?
         {
         get{
             //NSNumberFormatter().numberFromString is an objective-C function.
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
         }
         set{
             //newValue gets the value that will go into displayValue, we then use String Interpolation
-            display.text =  "\(newValue)"
+            if let value = newValue {
+                display.text = "\(value)"
+            } else {
+                display.text = nil
+            }
             userIsInTheMiddleOfTypingANumber = false
         }
     }
-    
 }
 
