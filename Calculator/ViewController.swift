@@ -19,8 +19,8 @@ class ViewController: UIViewController {
     
     var userIsInTheMiddleOfTypingANumber  = false
     
-    //this is an array, we don't need to say Array<Double> on the left side because Swift supports type inference
-    var operandStack = Array<Double>()
+    //this is the controller using the model
+    var brain = CalculatorBrain()
     
     var historyStack = Array<String>()
     
@@ -37,64 +37,44 @@ class ViewController: UIViewController {
             if userIsInTheMiddleOfTypingANumber {
                     display.text = display.text! + digit
                     updateHistory(digit)
-                    println("historyStack = \(historyStack)")
             }else{
                 display.text = digit
                 updateHistory(digit)
-                println("historyStack = \(historyStack)")
                 userIsInTheMiddleOfTypingANumber = true
             }
         }
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
-        updateHistory(operation)
-        println("historyStack = \(historyStack)")
+        
+        //updateHistory(operation)
         if userIsInTheMiddleOfTypingANumber{
             enter()
         }
-        //switches in Swift must be exhaustive so that is why we have the default case since we can't switch on every possible String. Switches in Swift also don't fallthrough by default.
-        switch operation{
-            //this is a closure
-        case "×":performOperation{ $0 * $1 }
-        case "÷":performOperation{ $1 / $0 }
-        case "+":performOperation{ $0 + $1 }
-        case "−":performOperation{ $1 - $0 }
-        case "√":performOperation{ sqrt($0) }
-        case "sin":performOperation{ sin($0) }
-        case "cos":performOperation{ cos($0) }
-        default: break
-        }
-        
-    }
-    
-    func performOperation(operation: (Double, Double) -> Double)
-    {
-        if operandStack.count >= 2{
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation){
+                displayValue = result
+            }else {
+                displayValue = 0
+            }
         }
     }
-    
-    func performOperation(operation: Double -> Double)
-    {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-    
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue!)
+        if let result = brain.pushOperand(displayValue!)
+        {
+            displayValue = result
+        } else{
+            displayValue = 0
+        }
     }
     
     @IBAction func clear() {
+        //need to make this work in assignment two
         display.text = "0"
         history.text = ""
-        operandStack.removeAll(keepCapacity: false)
+        //operandStack.removeAll(keepCapacity: false)
         historyStack.removeAll(keepCapacity: false)
         userIsInTheMiddleOfTypingANumber  = false
     }
