@@ -15,7 +15,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
  
     @IBOutlet weak var history: UILabel!
-
     
     var userIsInTheMiddleOfTypingANumber  = false
     
@@ -62,6 +61,8 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
+        //Here we are calling the pushOperand public API method of the CalculatorBrain to add the current value of the display
+        //We get the result and then up the display value with the result of the evaluation
         if let result = brain.pushOperand(displayValue!)
         {
             displayValue = result
