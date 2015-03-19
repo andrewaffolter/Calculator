@@ -21,7 +21,6 @@ class ViewController: UIViewController {
     //this is the controller using the model
     var brain = CalculatorBrain()
     
-    var historyStack = Array<String>()
     
     @IBAction func appendDigit(sender: UIButton) {
         
@@ -35,10 +34,8 @@ class ViewController: UIViewController {
         if !(display.text!.rangeOfString(".") != nil && digit == ".") {
             if userIsInTheMiddleOfTypingANumber {
                     display.text = display.text! + digit
-                    updateHistory(digit)
             }else{
                 display.text = digit
-                updateHistory(digit)
                 userIsInTheMiddleOfTypingANumber = true
             }
         }
@@ -59,6 +56,22 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func getVariable(sender: UIButton) {
+        if let result = brain.pushOperand("M"){
+            displayValue = result
+        }else{
+            displayValue = 0
+        }
+    }
+    
+    
+    @IBAction func setVariable(sender: UIButton) {
+        brain.variableValues["M"] = displayValue
+        displayValue = brain.evaluate()
+        userIsInTheMiddleOfTypingANumber  = false
+    }
+    
+    
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
         //Here we are calling the pushOperand public API method of the CalculatorBrain to add the current value of the display
@@ -74,10 +87,10 @@ class ViewController: UIViewController {
     @IBAction func clear() {
         //need to make this work in assignment two
         display.text = "0"
-        history.text = ""
-        //operandStack.removeAll(keepCapacity: false)
-        historyStack.removeAll(keepCapacity: false)
+        //history.text = ""
         userIsInTheMiddleOfTypingANumber  = false
+        brain.clearOpStack()
+        brain.clearVarStack()
     }
     
     @IBAction func backspace() {
@@ -87,15 +100,6 @@ class ViewController: UIViewController {
         {
             display.text = "0"
             userIsInTheMiddleOfTypingANumber = false
-        }
-    }
-    
-    func updateHistory(historyElement:String)
-    {
-        history.hidden = false
-        historyStack.append(historyElement)
-        if let last = historyStack.last {
-             history.text! += last
         }
     }
     
