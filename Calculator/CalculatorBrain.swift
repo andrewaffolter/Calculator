@@ -40,11 +40,13 @@ class CalculatorBrain
     
     var variableValues = Dictionary<String, Double>()
     
-    var description:String
+    var description:String?
         {
         get{
-            //return (description, _) = evaulateDescription(opStack)
-            return ""
+            if let (result, _) = evaulateDescription(opStack){
+                return result!
+            }
+            return nil
         }
     }
     
@@ -61,16 +63,29 @@ class CalculatorBrain
         learnOp(Op.UnaryOperation("cos", cos))
     }
     
-    private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op]){
+    private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op])?{
         if !ops.isEmpty{
             var description = ""
+            let comma:Character = ","
             
             var remainingOps = ops
             
             let op = remainingOps.removeLast()
             
-            //recursion goes here
+            switch op{
+            case .Operand(let operand):
+                return(nil,ops)
+        
+            case .Variable(let variable):
+                return(nil,ops)
             
+            case .UnaryOperation(_, let operation):
+                return(nil,ops)
+            
+            case .BinaryOperation(_, let operation):
+                return(nil,ops)
+            
+            }
         }
         return(nil,ops)
     }
@@ -113,7 +128,7 @@ class CalculatorBrain
     
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
-        println("\(opStack) = \(result) with \(remainder) left over")
+        //println("\(opStack) = \(result) with \(remainder) left over")
         return result
     }
     
@@ -134,12 +149,16 @@ class CalculatorBrain
         return evaluate()
     }
     
-    func clearOpStack()
-    {
+    func clearOpStack(){
         opStack.removeAll(keepCapacity: true)
     }
     
     func clearVarStack(){
         variableValues.removeAll(keepCapacity: true)
+    }
+    
+    func clearAll(){
+        clearOpStack()
+        clearVarStack()
     }
 }

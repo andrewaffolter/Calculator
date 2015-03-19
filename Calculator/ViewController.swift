@@ -57,7 +57,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func getVariable(sender: UIButton) {
-        if let result = brain.pushOperand("M"){
+        if let result = brain.pushOperand(sender.currentTitle!){
             displayValue = result
         }else{
             displayValue = 0
@@ -87,10 +87,9 @@ class ViewController: UIViewController {
     @IBAction func clear() {
         //need to make this work in assignment two
         display.text = "0"
-        //history.text = ""
+        history.text = ""
         userIsInTheMiddleOfTypingANumber  = false
-        brain.clearOpStack()
-        brain.clearVarStack()
+        brain.clearAll()
     }
     
     @IBAction func backspace() {
@@ -131,6 +130,10 @@ class ViewController: UIViewController {
                 display.text = nil
             }
             userIsInTheMiddleOfTypingANumber = false
+            
+//            if let historyText = brain.description{
+//                history.text! += " = \(historyText)"
+//            }
         }
     }
 }
