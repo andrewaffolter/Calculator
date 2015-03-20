@@ -44,7 +44,7 @@ class CalculatorBrain
         {
         get{
             if let (result, _) = evaulateDescription(opStack){
-                return result!
+                return result
             }
             return nil
         }
@@ -65,26 +65,22 @@ class CalculatorBrain
     
     private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op])?{
         if !ops.isEmpty{
-            var description = ""
-            let comma:Character = ","
-            
             var remainingOps = ops
             
             let op = remainingOps.removeLast()
             
             switch op{
             case .Operand(let operand):
-                return(nil,ops)
+                return ("\(operand)",remainingOps)
         
             case .Variable(let variable):
-                return(nil,ops)
+                return (variable,remainingOps)
             
-            case .UnaryOperation(_, let operation):
-                return(nil,ops)
+            case .UnaryOperation(let symbol, let operation):
+                return(symbol,remainingOps)
             
-            case .BinaryOperation(_, let operation):
-                return(nil,ops)
-            
+            case .BinaryOperation(let symbol, let operation):
+                return(symbol,remainingOps)
             }
         }
         return(nil,ops)
@@ -128,7 +124,7 @@ class CalculatorBrain
     
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
-        //println("\(opStack) = \(result) with \(remainder) left over")
+        println("\(opStack) = \(result) with \(remainder) left over")
         return result
     }
     

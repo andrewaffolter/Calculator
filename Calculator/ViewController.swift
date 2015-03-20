@@ -43,7 +43,6 @@ class ViewController: UIViewController {
     
     @IBAction func operate(sender: UIButton) {
         
-        //updateHistory(operation)
         if userIsInTheMiddleOfTypingANumber{
             enter()
         }
@@ -87,7 +86,7 @@ class ViewController: UIViewController {
     @IBAction func clear() {
         //need to make this work in assignment two
         display.text = "0"
-        history.text = ""
+        history.text = "History"
         userIsInTheMiddleOfTypingANumber  = false
         brain.clearAll()
     }
@@ -131,9 +130,10 @@ class ViewController: UIViewController {
             }
             userIsInTheMiddleOfTypingANumber = false
             
-//            if let historyText = brain.description{
-//                history.text! += " = \(historyText)"
-//            }
+            if let historyText = brain.description{
+                //need to append the = sign
+                history.text! += " \(historyText)"
+            }
         }
     }
 }

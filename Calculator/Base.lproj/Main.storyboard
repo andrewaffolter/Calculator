@@ -180,7 +180,6 @@
                                 </state>
                                 <connections>
                                     <action selector="enter" destination="BYZ-38-t0r" eventType="touchUpInside" id="UpA-51-EJg"/>
-                                    <action selector="operate:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vG7-d2-6g0"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DQn-uM-nAo">
