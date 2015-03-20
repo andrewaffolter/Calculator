@@ -15,6 +15,7 @@ class CalculatorBrain
         
         case Variable(String)
         case Operand(Double)
+        case Constant(String, Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
     
@@ -29,6 +30,8 @@ class CalculatorBrain
                         return symbol
                 case .Variable(let symbol):
                     return symbol
+                case .Constant(let symbol, _):
+                    return symbol
                     }
                 }
             }
@@ -40,15 +43,13 @@ class CalculatorBrain
     
     var variableValues = Dictionary<String, Double>()
     
-    var description:String?
+    var description:String
         {
         get{
-            if let (result, _) = evaulateDescription(opStack){
-                return result
+                let (result, _) = evaulateDescription(opStack)
+                return result!
             }
-            return nil
         }
-    }
     
     init(){
         func learnOp(op: Op){
@@ -63,7 +64,7 @@ class CalculatorBrain
         learnOp(Op.UnaryOperation("cos", cos))
     }
     
-    private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op])?{
+    private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op]){
         if !ops.isEmpty{
             var remainingOps = ops
             
@@ -75,12 +76,24 @@ class CalculatorBrain
         
             case .Variable(let variable):
                 return (variable,remainingOps)
+        
+            case .Constant(let symbol, _):
+                return (symbol, remainingOps)
+                
+            case .UnaryOperation(let symbol, _):
+                let operandDescription = evaulateDescription(remainingOps)
+                if let operand = operandDescription.description {
+                    return(symbol + "(" + operand + ")" ,remainingOps)
+                }
             
-            case .UnaryOperation(let symbol, let operation):
-                return(symbol,remainingOps)
-            
-            case .BinaryOperation(let symbol, let operation):
-                return(symbol,remainingOps)
+            case .BinaryOperation(let symbol, _):
+                let operandDescription1 = evaulateDescription(remainingOps)
+                if let operand1 = operandDescription1.description {
+                    let operandDescription2 = evaulateDescription(operandDescription1.remainingOps)
+                    if let operand2 = operandDescription2.description {
+                        return ("(" + operand2 + symbol + operand1 + ")", remainingOps)
+                    }
+                }
             }
         }
         return(nil,ops)
@@ -97,12 +110,14 @@ class CalculatorBrain
             
             case .Operand(let operand):
                 return (operand, remainingOps)
-                
+
+            case .Constant(_, let value):
+                return (value, remainingOps)
+
             case .Variable(let variable):
                 if let variableValue = variableValues[variable] {
                     return (variableValue, remainingOps)
                 }
-    
             case .UnaryOperation(_, let operation):
                 let operandEvaulation = evaluate(remainingOps)
                 if let operand = operandEvaulation.result{
@@ -134,7 +149,10 @@ class CalculatorBrain
     }
     
     func pushOperand(symbol: String) -> Double? {
-        opStack.append(Op.Variable(symbol))
+        switch symbol{
+          case "π": opStack.append(Op.Constant(symbol, M_PI))
+            default:opStack.append(Op.Variable(symbol))
+        }
         return evaluate()
     }
 

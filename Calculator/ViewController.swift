@@ -26,11 +26,6 @@ class ViewController: UIViewController {
         
         var digit = sender.currentTitle!
         
-        switch digit{
-        case "π": digit = "\(M_PI)"
-        default:break
-        }
-        
         if !(display.text!.rangeOfString(".") != nil && digit == ".") {
             if userIsInTheMiddleOfTypingANumber {
                     display.text = display.text! + digit
@@ -63,7 +58,6 @@ class ViewController: UIViewController {
         }
     }
     
-    
     @IBAction func setVariable(sender: UIButton) {
         brain.variableValues["M"] = displayValue
         displayValue = brain.evaluate()
@@ -86,7 +80,7 @@ class ViewController: UIViewController {
     @IBAction func clear() {
         //need to make this work in assignment two
         display.text = "0"
-        history.text = "History"
+        history.text = ""
         userIsInTheMiddleOfTypingANumber  = false
         brain.clearAll()
     }
@@ -130,10 +124,8 @@ class ViewController: UIViewController {
             }
             userIsInTheMiddleOfTypingANumber = false
             
-            if let historyText = brain.description{
-                //need to append the = sign
-                history.text! += " \(historyText)"
-            }
+            history.hidden = false
+            history.text! = brain.description + "= "
         }
     }
 }
