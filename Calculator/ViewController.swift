@@ -125,7 +125,7 @@ class ViewController: UIViewController {
             userIsInTheMiddleOfTypingANumber = false
             
             history.hidden = false
-            history.text! = brain.description + "= "
+            history.text! = "= " + brain.description
         }
     }
 }

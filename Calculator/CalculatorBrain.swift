@@ -83,7 +83,7 @@ class CalculatorBrain
             case .UnaryOperation(let symbol, _):
                 let operandDescription = evaulateDescription(remainingOps)
                 if let operand = operandDescription.description {
-                    return(symbol + "(" + operand + ")" ,remainingOps)
+                    return(symbol + "(" + operand + ")" ,operandDescription.remainingOps)
                 }
             
             case .BinaryOperation(let symbol, _):
@@ -91,7 +91,7 @@ class CalculatorBrain
                 if let operand1 = operandDescription1.description {
                     let operandDescription2 = evaulateDescription(operandDescription1.remainingOps)
                     if let operand2 = operandDescription2.description {
-                        return ("(" + operand2 + symbol + operand1 + ")", remainingOps)
+                        return ("(" + operand2 + symbol + operand1 + ")", operandDescription2.remainingOps)
                     }
                 }
             }
