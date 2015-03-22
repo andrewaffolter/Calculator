@@ -64,6 +64,32 @@ class CalculatorBrain
         learnOp(Op.UnaryOperation("cos", cos))
     }
     
+    typealias PropertyList = AnyObject
+    var program: PropertyList{ //guaranteed to be a PropertyList
+        get{
+            //returns an array of strings which will either be an operators from the list of knownOps, or a string representation of the operands double value
+            //The closure below feeds into map to return a new array which is the equivilant of the below code
+            //var returnValue = Array<String>()
+            //for op in opStack{
+            //  returnValue.append(op.description)
+            //}
+            return opStack.map { $0.description }
+        }
+        set{
+            if let opSymbols = newValue as? Array<String>{
+                var newOpStack = [Op]()
+            for opSymbol in opSymbols {
+                if let op = knownOps[opSymbol]{
+                    newOpStack.append(op)
+                }else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue{
+                    newOpStack.append(.Operand(operand))
+                }
+                opStack = newOpStack
+                }
+            }
+        }
+    }
+    
     private func evaulateDescription(ops: [Op]) -> (description:String?, remainingOps: [Op]){
         if !ops.isEmpty{
             var remainingOps = ops
